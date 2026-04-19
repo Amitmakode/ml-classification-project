@@ -18,8 +18,9 @@ def get_engine():
 def reload():
     engine = get_engine()  # get db connection
     df = pd.read_csv("data/online_shoppers_intention.csv")  # read csv file
-    df['Weekend'] = df['Weekend'].map({'TRUE': 1, 'FALSE': 0})  # convert Weekend to int
-    df['Revenue'] = df['Revenue'].map({'TRUE': 1, 'FALSE': 0})  # convert Revenue to int
+    # convert Weekend and Revenue to int — handle multiple formats
+    df['Weekend'] = df['Weekend'].astype(str).str.strip().str.upper().map({'TRUE': 1, 'FALSE': 0})  # convert Weekend to int
+    df['Revenue'] = df['Revenue'].astype(str).str.strip().str.upper().map({'TRUE': 1, 'FALSE': 0})  # convert Revenue to int
     df.to_sql('online_shoppers', engine, if_exists='replace', index=False)  # load to mysql
     print(f"Loaded {len(df)} rows")  # log count
     print(df['Revenue'].value_counts())  # verify Revenue distribution
