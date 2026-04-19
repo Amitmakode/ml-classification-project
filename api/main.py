@@ -57,7 +57,8 @@ class PredictionOutput(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)  # serve frontend
 def frontend(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})  # render html
+    #return templates.TemplateResponse("index.html", {"request": request})  # render html
+    return templates.TemplateResponse(request, "index.html")
 
 @app.get("/health")  # health check endpoint
 def health():

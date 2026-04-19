@@ -34,11 +34,17 @@ sample_input = {
     "Weekend": 0
 }
 
-def test_root():
+#def test_root():
     # test root endpoint returns 200
+    #response = client.get("/")  # call root endpoint
+    #assert response.status_code == 200  # check status code
+    #assert response.json()["status"] == "Online Shoppers Intention API is running"  # check response
+
+def test_root():
+    # test root endpoint returns 200 with HTML response
     response = client.get("/")  # call root endpoint
     assert response.status_code == 200  # check status code
-    assert response.json()["status"] == "Online Shoppers Intention API is running"  # check response
+    assert "text/html" in response.headers["content-type"]  # check html response
 
 def test_health():
     # test health endpoint returns healthy status
