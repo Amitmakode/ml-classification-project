@@ -25,3 +25,5 @@ httpx==0.26.0          # HTTP client for making API requests (async + sync suppo
 cryptography==42.0.5   #PyMySQL with MySQL 8.0  secure authentication
 
 imbalanced-learn==0.12.0  #for imbalanced data
+
+jinja2==3.1.4

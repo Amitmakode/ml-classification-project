@@ -1,6 +1,10 @@
-# This file defines FastAPI app with prediction and health check endpoints
+# This file defines FastAPI app with prediction, health check and frontend endpoints
 
 from fastapi import FastAPI, HTTPException  # fastapi framework
+from fastapi.staticfiles import StaticFiles  # serve static files
+from fastapi.templating import Jinja2Templates  # serve html templates
+from fastapi.requests import Request  # request object
+from fastapi.responses import HTMLResponse  # html response
 from pydantic import BaseModel  # request body validation
 import sys  # system path manipulation
 import os  # access env variables
@@ -14,50 +18,56 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ml')
 from predict import predict  # import predict function
 
 app = FastAPI(
-    title="Online Shoppers Intention API",  # api title
-    description="Predicts if a shopper will purchase or not",  # api description
-    version="1.0.0"  # api version
+    title="Online Shoppers Intention API",
+    description="Predicts if a shopper will purchase or not",
+    version="1.0.0"
 )
 
-# define input schema using pydantic — all 17 features
+# mount static files directory
+app.mount("/static", StaticFiles(directory="api/static"), name="static")
+
+# setup jinja2 templates
+templates = Jinja2Templates(directory="api/templates")
+
+# define input schema
 class ShopperInput(BaseModel):
-    Administrative: int              # number of administrative pages visited
-    Administrative_Duration: float   # time spent on administrative pages
-    Informational: int               # number of informational pages visited
-    Informational_Duration: float    # time spent on informational pages
-    ProductRelated: int              # number of product related pages visited
-    ProductRelated_Duration: float   # time spent on product related pages
-    BounceRates: float               # bounce rate of visited pages
-    ExitRates: float                 # exit rate of visited pages
-    PageValues: float                # page value of visited pages
-    SpecialDay: float                # closeness to special day
-    Month: int                       # month of visit encoded as int
-    OperatingSystems: int            # operating system of visitor
-    Browser: int                     # browser of visitor
-    Region: int                      # region of visitor
-    TrafficType: int                 # traffic type of visitor
-    VisitorType: int                 # visitor type encoded as int
-    Weekend: int                     # 1 if weekend else 0
+    Administrative: int
+    Administrative_Duration: float
+    Informational: int
+    Informational_Duration: float
+    ProductRelated: int
+    ProductRelated_Duration: float
+    BounceRates: float
+    ExitRates: float
+    PageValues: float
+    SpecialDay: float
+    Month: int
+    OperatingSystems: int
+    Browser: int
+    Region: int
+    TrafficType: int
+    VisitorType: int
+    Weekend: int
 
 # define output schema
 class PredictionOutput(BaseModel):
-    prediction: int      # 0 or 1
-    probability: float   # confidence score
-    message: str         # human readable result
+    prediction: int
+    probability: float
+    message: str
 
-@app.get("/")  # root endpoint
-def root():
-    return {"status": "Online Shoppers Intention API is running"}  # health check
+@app.get("/", response_class=HTMLResponse)  # serve frontend
+def frontend(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})  # render html
 
 @app.get("/health")  # health check endpoint
 def health():
-    return {"status": "healthy"}  # return healthy status
+    return {"status": "healthy"}
 
 @app.post("/predict", response_model=PredictionOutput)  # prediction endpoint
 def predict_endpoint(data: ShopperInput):
     try:
-        input_dict = data.model_dump()  # convert pydantic model to dict
+        input_dict = data.model_dump()  # convert to dict
         result = predict(input_dict)    # run prediction
-        return result                   # return prediction result
+        return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))  # return error if prediction fails
+        raise HTTPException(status_code=500, detail=str(e))
