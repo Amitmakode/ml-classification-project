@@ -9,21 +9,8 @@ services:
     region: oregon  # render region
     branch: main  # deploy from main branch
 
-    # environment variables for the service
     envVars:
-      - key: DB_HOST
-        sync: false  # set manually in render dashboard
-      - key: DB_PORT
-        value: 3306  # mysql default port
-      - key: DB_USER
-        sync: false  # set manually in render dashboard
-      - key: DB_PASSWORD
-        sync: false  # set manually in render dashboard
-      - key: DB_NAME
-        sync: false  # set manually in render dashboard
       - key: MLFLOW_TRACKING_URI
         value: ./mlruns  # mlflow tracking uri
       - key: MODEL_PATH
         value: ./ml/model.pkl  # model save path
-      - key: PYTHON_VERSION
-        value: "3.11"  # python version
