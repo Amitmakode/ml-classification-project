@@ -7,4 +7,3 @@ mlruns/
 *.pkl
 monitoring/*.html
 .pytest_cache/
-data/
