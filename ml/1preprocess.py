@@ -12,18 +12,18 @@ import os  # access env variables
 
 load_dotenv()  # load .env file
 
-def get_pg_engine():
-    # build postgresql connection string for data warehouse
+def get_engine():
+    # build mysql connection string
     url = (
-        f"postgresql+psycopg2://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}"
-        f"@{os.getenv('PG_HOST')}:{os.getenv('PG_PORT')}/{os.getenv('PG_NAME')}"
+        f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+        f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
-    return create_engine(url)  # return postgresql engine
+    return create_engine(url)  # return engine
 
 def load_transformed_data():
-    engine = get_pg_engine()  # get postgresql connection
-    df = pd.read_sql("SELECT * FROM transformed_shoppers", engine)  # fetch transformed data from warehouse
-    print(f"Loaded {len(df)} rows from PostgreSQL warehouse")  # log count
+    engine = get_engine()  # get db connection
+    df = pd.read_sql("SELECT * FROM transformed_shoppers", engine)  # fetch transformed data
+    print(f"Loaded {len(df)} rows")  # log count
     return df  # return dataframe
 
 def preprocess(df):
@@ -45,7 +45,7 @@ def preprocess(df):
     selected_features = X.columns[selector.get_support()].tolist()
     print(f"Selected Features: {selected_features}")  # log selected features
 
-    # apply SMOTE to balance classes
+    # apply SMOTE to balance classes (Revenue 0 and 1 equal ho jayenge)
     smote = SMOTE(random_state=42)
     X_resampled, y_resampled = smote.fit_resample(X_selected, y)  # oversample minority class
 
@@ -68,6 +68,6 @@ def preprocess(df):
     return X_resampled, y_resampled  # return preprocessed data
 
 if __name__ == "__main__":
-    df = load_transformed_data()  # load data from postgresql
+    df = load_transformed_data()  # load data
     X, y = preprocess(df)  # run preprocessing
     print(f"Final shape after preprocessing: {X.shape}")  # log final shape

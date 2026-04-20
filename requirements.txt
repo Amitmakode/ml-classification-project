@@ -26,4 +26,6 @@ cryptography==42.0.5   #PyMySQL with MySQL 8.0  secure authentication
 
 imbalanced-learn==0.12.0  #for imbalanced data
 
-jinja2==3.1.4
+jinja2==3.1.4           # for web app
+
+psycopg2-binary==2.9.9  # for postgre connection
