@@ -7,8 +7,7 @@ A complete end-to-end ML Classification project that predicts whether an online 
 - **Swagger UI**: https://shoppers-ml-api.onrender.com/docs
 
 ## Tech Stack
-- **Source DB**: MySQL
-- **Data Warehouse**: PostgreSQL
+- **Data**: MySQL
 - **ETL**: Python (Extract → Transform → Load)
 - **ML**: Scikit-learn, XGBoost, MLflow
 - **API**: FastAPI
@@ -18,7 +17,6 @@ A complete end-to-end ML Classification project that predicts whether an online 
 - **Deploy**: Render Free Tier
 
 ## Project Structure
-
 
 
 ml-classification-project/
@@ -35,14 +33,6 @@ ml-classification-project/
 └── requirements.txt        # Python dependencies
 
 
-
-
-## Architecture
-
-
-MySQL (source) → ETL → PostgreSQL (warehouse) → ML Training → Model → FastAPI → Docker → Render
-
-
 ## Dataset
 - **Source**: Online Shoppers Purchasing Intention Dataset
 - **Rows**: 12,330
@@ -50,7 +40,7 @@ MySQL (source) → ETL → PostgreSQL (warehouse) → ML Training → Model → 
 - **Features**: 17 behavioral and session features
 
 ## ML Pipeline
-1. ETL — Extract raw data from MySQL, transform, load into PostgreSQL warehouse
+1. ETL — Extract raw data from MySQL, transform, load back
 2. Preprocessing — StandardScaler, SelectKBest (top 10 features), SMOTE for class imbalance
 3. Training — Random Forest vs XGBoost, best model selected automatically
 4. Evaluation — Accuracy, Precision, Recall, F1, ROC AUC
@@ -77,7 +67,6 @@ MySQL (source) → ETL → PostgreSQL (warehouse) → ML Training → Model → 
 ### Prerequisites
 - Python 3.11
 - MySQL 8.0
-- PostgreSQL 15+
 - Docker (optional)
 
 ### Steps
@@ -96,12 +85,12 @@ pip install -r requirements.txt
 
 # setup environment variables
 cp .env.example .env
-# edit .env with your MySQL and PostgreSQL credentials
+# edit .env with your MySQL credentials
 
 # load data into MySQL
 python data/reload_data.py
 
-# run ETL pipeline (MySQL → PostgreSQL)
+# run ETL pipeline
 python etl/load.py
 
 # train model
@@ -134,10 +123,9 @@ python monitoring/drift_report.py
 
 ## CI/CD Pipeline
 1. Push to main branch triggers GitHub Actions
-2. MySQL + PostgreSQL services spin up automatically
-3. Tests run automatically
-4. Docker image built and pushed to Docker Hub
-5. Render auto deploys latest image
+2. Tests run automatically
+3. Docker image built and pushed to Docker Hub
+4. Render auto deploys latest image
 
 ## Environment Variables
 
@@ -147,14 +135,8 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=shoppers_db
-PG_HOST=localhost
-PG_PORT=5432
-PG_USER=postgres
-PG_PASSWORD=your_password
-PG_NAME=shoppers_warehouse
 MLFLOW_TRACKING_URI=./mlruns
 MODEL_PATH=./ml/model.pkl
-
 
 
 ## Author
